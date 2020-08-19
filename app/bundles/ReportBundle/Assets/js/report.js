@@ -67,7 +67,9 @@ Mautic.scheduleDisplay = function ($isScheduled, $unitTypeId, $scheduleDay, $sch
     } else {
         mQuery('#scheduleDay label').show();
     }
-    Mautic.schedulePreview($isScheduled, $unitTypeId, $scheduleDay, $scheduleMonthFrequency);
+    if($isScheduled.length) {
+        Mautic.schedulePreview($isScheduled, $unitTypeId, $scheduleDay, $scheduleMonthFrequency);
+    }
 };
 
 Mautic.schedulePreview = function ($isScheduled, $unitTypeId, $scheduleDay, $scheduleMonthFrequency) {
@@ -207,9 +209,7 @@ Mautic.updateReportFilterValueInput = function (filterColumn, setup) {
     }
 
     // Replace the value field appropriately
-    if (mQuery('#' + valueId + '_chosen').length) {
-        mQuery('#' + valueId).chosen('destroy');
-    }
+    Mautic.destroyChosen(mQuery('#' + valueId));
 
     if (filterType == 'bool' || filterType == 'boolean') {
         if (mQuery(valueEl).attr('type') != 'radio') {
@@ -368,7 +368,7 @@ Mautic.getHighestIndex = function (selector) {
     var selectorChildren = mQuery('#' + selector + ' > div');
 
     selectorChildren.each(function() {
-        var index = mQuery(this).attr('id').split('_')[2];
+        var index = parseInt(mQuery(this).attr('id').split('_')[2]);
         highestIndex = (index > highestIndex) ? index : highestIndex;
     });
 

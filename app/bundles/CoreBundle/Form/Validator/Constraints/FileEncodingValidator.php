@@ -21,8 +21,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class FileEncodingValidator extends ConstraintValidator
 {
     /**
-     * @param LeadField  $field
-     * @param Constraint $constraint
+     * @param LeadField $field
      */
     public function validate($field, Constraint $constraint)
     {
@@ -31,7 +30,7 @@ class FileEncodingValidator extends ConstraintValidator
             and the file path will be an empty string "". If that is the case
             no further checks are required. Just return.
         */
-        if ($field->getPathname() === '' || $field->getPathname() === null) {
+        if (!$field || '' === $field->getPathname() || null === $field->getPathname()) {
             return;
         }
 

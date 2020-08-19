@@ -39,8 +39,6 @@ class FieldValueTransformer
 
     /**
      * FieldValueTransformer constructor.
-     *
-     * @param RouterInterface $router
      */
     public function __construct(RouterInterface $router)
     {
@@ -87,7 +85,7 @@ class FieldValueTransformer
 
         $submissionEvent->setTokens($tokens);
         $submissionEvent->setContactFieldMatches($contactFieldMatches);
-        $this->isIsTransformed(true);
+        $this->isIsTransformed();
     }
 
     /**

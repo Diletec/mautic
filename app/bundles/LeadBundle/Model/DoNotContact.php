@@ -29,9 +29,6 @@ class DoNotContact
 
     /**
      * DoNotContact constructor.
-     *
-     * @param LeadModel              $leadModel
-     * @param DoNotContactRepository $dncRepo
      */
     public function __construct(LeadModel $leadModel, DoNotContactRepository $dncRepo)
     {
@@ -100,11 +97,16 @@ class DoNotContact
         $dnc     = false;
         $contact = $this->leadModel->getEntity($contactId);
 
-        // if !$checkCurrentStatus, assume is contactable due to already being valided
+        if (null === $contact) {
+            // Contact not found, nothing to do
+            return false;
+        }
+
+        // if !$checkCurrentStatus, assume is contactable due to already being validated
         $isContactable = ($checkCurrentStatus) ? $this->isContactable($contact, $channel) : DNC::IS_CONTACTABLE;
 
         // If they don't have a DNC entry yet
-        if ($isContactable === DNC::IS_CONTACTABLE) {
+        if (DNC::IS_CONTACTABLE === $isContactable) {
             $dnc = $this->createDncRecord($contact, $channel, $reason, $comments);
         } elseif ($isContactable !== $reason) {
             // Or if the given reason is different than the stated reason
@@ -112,7 +114,7 @@ class DoNotContact
             /** @var DNC $dnc */
             foreach ($contact->getDoNotContact() as $dnc) {
                 // Only update if the contact did not unsubscribe themselves or if the code forces it
-                $allowOverride = ($allowUnsubscribeOverride || $dnc->getReason() !== DNC::UNSUBSCRIBED);
+                $allowOverride = ($allowUnsubscribeOverride || DNC::UNSUBSCRIBED !== $dnc->getReason());
 
                 // Only update if the contact did not unsubscribe themselves
                 if ($allowOverride && $dnc->getChannel() === $channel) {
@@ -136,7 +138,6 @@ class DoNotContact
     }
 
     /**
-     * @param Lead   $contact
      * @param string $channel
      *
      * @return int
@@ -160,7 +161,7 @@ class DoNotContact
         }
 
         foreach ($dncEntries as $dnc) {
-            if ($dnc->getReason() !== DNC::IS_CONTACTABLE) {
+            if (DNC::IS_CONTACTABLE !== $dnc->getReason()) {
                 return $dnc->getReason();
             }
         }
@@ -171,7 +172,6 @@ class DoNotContact
     /**
      * @param      $channel
      * @param      $reason
-     * @param Lead $contact
      * @param null $comments
      *
      * @return DNC
@@ -199,8 +199,6 @@ class DoNotContact
     }
 
     /**
-     * @param DNC  $dnc
-     * @param Lead $contact
      * @param      $channel
      * @param      $reason
      * @param null $comments

@@ -100,8 +100,9 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
      */
     public function __construct()
     {
-        $this->stats           = new ArrayCollection();
-        $this->variantChildren = new ArrayCollection();
+        $this->stats               = new ArrayCollection();
+        $this->translationChildren = new ArrayCollection();
+        $this->variantChildren     = new ArrayCollection();
     }
 
     /**
@@ -109,10 +110,11 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
      */
     public function __clone()
     {
-        $this->id              = null;
-        $this->sentCount       = 0;
-        $this->stats           = new ArrayCollection();
-        $this->variantChildren = new ArrayCollection();
+        $this->id                  = null;
+        $this->sentCount           = 0;
+        $this->stats               = new ArrayCollection();
+        $this->translationChildren = new ArrayCollection();
+        $this->variantChildren     = new ArrayCollection();
 
         parent::__clone();
     }
@@ -125,9 +127,6 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
         $this->stats = new ArrayCollection();
     }
 
-    /**
-     * @param ORM\ClassMetadata $metadata
-     */
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
         $builder = new ClassMetadataBuilder($metadata);
@@ -182,8 +181,6 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
     }
 
     /**
-     * @param ClassMetadata $metadata
-     *
      * @throws \Symfony\Component\Validator\Exception\ConstraintDefinitionException
      * @throws \Symfony\Component\Validator\Exception\InvalidOptionsException
      * @throws \Symfony\Component\Validator\Exception\MissingOptionsException
@@ -236,9 +233,6 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
         ]));
     }
 
-    /**
-     * @param ApiMetadataDriver $metadata
-     */
     public static function loadApiMetadata(ApiMetadataDriver $metadata)
     {
         $metadata->setGroupPrefix('dwc')
@@ -273,7 +267,7 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
         $getter  = 'get'.ucfirst($prop);
         $current = $this->$getter();
 
-        if ($prop == 'variantParent' || $prop == 'translationParent' || $prop == 'category') {
+        if ('variantParent' == $prop || 'translationParent' == $prop || 'category' == $prop) {
             $currentId = ($current) ? $current->getId() : '';
             $newId     = ($val) ? $val->getId() : null;
             if ($currentId != $newId) {
@@ -500,8 +494,6 @@ class DynamicContent extends FormEntity implements VariantEntityInterface, Trans
     }
 
     /**
-     * @param array $utmTags
-     *
      * @return DynamicContent
      */
     public function setUtmTags(array $utmTags)
